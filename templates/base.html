@@ -10,8 +10,15 @@
     </head>
     <body>
         <nav>
-            <a href='/blog'>Main Blog Page</a>
-            <a href='/newpost'>Add a Blog Entry</a>
+            <ul id="user-account">
+                <li><a href="/login">Log in</a></li>
+                <li><a href="/logout">Log out</a></li>
+            </ul>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog">All posts</a></li>
+                <li><a href="/blog/newpost">New post</a></li>
+            </ul>
         </nav>
         {% block content %}
         {% endblock %}

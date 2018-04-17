@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -6,6 +6,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:blogz@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = 'y337kGcyAs&zP3B'
 
 class Blog(db.Model):
 
@@ -26,27 +27,89 @@ class User(db.Model):
     password = db.Column(db.String(120))
     blogs = db.relationship('Blog', backref='owner')
 
-    # TODO - Finish
-    pass
+    def __init__(self, userName, password):
+        self.userName = userName
+        self. password = password
 
-@app.route("/signup")
+@app.route("/signup", methods=['POST', 'GET'])
 def signup():
-    # TODO - Finish
-    pass
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        verify = request.form['verify']
 
-@app.route("/login")
+        
+        existing_user = User.query.filter_by(userName=username).first()
+
+        name_error = ""
+        password_error = ""
+        match_error = ""
+        email_error = ""
+
+                
+        if not username:
+            name_error = "You must enter a Username"
+        elif " " in username or len(username) < 3 or len(username) > 20:
+            name_error = "That's not a valid Username"
+            user_name = ""
+        elif existing_user:
+            name_error = "That user already exists"
+            existing_user = ""
+           
+        if not password:
+            password_error = "You must enter a Password"
+        elif " " in password or len(password) < 3 or len(password) > 20:
+            password_error = "Thats not a valid Password"
+
+        if not verify or password != verify:
+            match_error = "Passwords don't match"
+            
+                                 
+        if not name_error and not password_error and not match_error and not email_error:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username
+            return redirect('/')
+        else:
+            return render_template("signup.html", title="Signup",name_error=name_error, password_error=password_error, match_error=match_error, email_error=email_error, username=username)
+
+    return render_template('signup.html', title="Sign up")
+
+@app.route("/login", methods=['POST', 'GET'])
 def login():
-    # TODO - Finish
-    pass
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(userName=username).first()
+
+        user_error = ""
+        password_error = ""
+
+        if not user:
+            user_error = "That user doesn't exist"
+            username = ""
+            return render_template("login.html", user_error=user_error)
+        if password != user.password:
+            password_error = "Incorrect password"
+            return render_template("login.html", user_error=user_error, password_error=password_error, username=username)
+
+
+        if user and user.password == password:
+            session['username'] = username
+            return redirect('/newpost')
+            
+    return render_template('login.html', title="Log in")
+
 
 @app.route("/index")
 def index():
     # TODO - Finish
     pass
 
-@app.route("/logout", methods=['POST'])
+@app.route("/logout", methods=['POST', 'GET'])
 def logout():
-    # TODO - del user from session
+    del session['username']
     return redirect("/blog")
 
 @app.route("/blog", methods=['POST', 'GET'])
@@ -79,7 +142,7 @@ def new_post():
         if not blog_body:
             body_error = "Please fill out the body"
         if not title_error and not body_error:
-            owner = User.query.filter_by(email=session['email']).first()
+            owner = User.query.filter_by(email=session['username']).first()
             new_blog = Blog(blog_title, blog_body, owner)
             db.session.add(new_blog)
             db.session.commit()
