@@ -31,22 +31,34 @@ class User(db.Model):
         self.userName = userName
         self. password = password
 
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup', 'blog', 'index']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')        
+
+
+@app.route("/logout", methods=['POST', 'GET'])
+def logout():
+    del session['username']
+    return redirect("/blog")
+
+
 @app.route("/signup", methods=['POST', 'GET'])
 def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         verify = request.form['verify']
-
-        
+ 
         existing_user = User.query.filter_by(userName=username).first()
 
         name_error = ""
         password_error = ""
         match_error = ""
         email_error = ""
-
-                
+          
         if not username:
             name_error = "You must enter a Username"
         elif " " in username or len(username) < 3 or len(username) > 20:
@@ -70,11 +82,12 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username
-            return redirect('/')
+            return redirect('/newpost')
         else:
             return render_template("signup.html", title="Signup",name_error=name_error, password_error=password_error, match_error=match_error, email_error=email_error, username=username)
 
     return render_template('signup.html', title="Sign up")
+
 
 @app.route("/login", methods=['POST', 'GET'])
 def login():
@@ -107,10 +120,6 @@ def index():
     # TODO - Finish
     pass
 
-@app.route("/logout", methods=['POST', 'GET'])
-def logout():
-    del session['username']
-    return redirect("/blog")
 
 @app.route("/blog", methods=['POST', 'GET'])
 def blog():
@@ -123,10 +132,8 @@ def blog():
     blogs = Blog.query.all()
     
     return render_template("blog.html", blogs=blogs)
+
     
-
-
-
 @app.route("/newpost", methods=['POST', 'GET'])
 def new_post():
     if request.method == 'POST':
