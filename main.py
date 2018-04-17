@@ -133,7 +133,7 @@ def blog():
     
     return render_template("blog.html", blogs=blogs)
 
-    
+
 @app.route("/newpost", methods=['POST', 'GET'])
 def new_post():
     if request.method == 'POST':
@@ -149,7 +149,7 @@ def new_post():
         if not blog_body:
             body_error = "Please fill out the body"
         if not title_error and not body_error:
-            owner = User.query.filter_by(email=session['username']).first()
+            owner = User.query.filter_by(userName=session['username']).first()
             new_blog = Blog(blog_title, blog_body, owner)
             db.session.add(new_blog)
             db.session.commit()

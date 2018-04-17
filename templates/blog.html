@@ -15,7 +15,7 @@
         {% else %}
         
             {% for blog in range(blogs|length, 0, -1) %}
-            <h2><a href="/blog?id={{blog.id}}">{{blogs[blog - 1].title}}</a></h2>
+            <h2><a href="/blog?id={{blogs[blog - 1].id}}">{{blogs[blog - 1].title}}</a></h2>
             <p>{{blogs[blog - 1].body}}</p>
             <hr />
             {% endfor %}
