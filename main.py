@@ -115,10 +115,10 @@ def login():
     return render_template('login.html', title="Log in")
 
 
-@app.route("/index")
+@app.route("/")
 def index():
-    # TODO - Finish
-    pass
+    users = User.query.all()
+    return render_template('index.html', users=users)
 
 
 @app.route("/blog", methods=['POST', 'GET'])
