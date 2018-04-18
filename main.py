@@ -124,12 +124,18 @@ def index():
 @app.route("/blog", methods=['POST', 'GET'])
 def blog():
     blog_id = request.args.get('id')
+    user_id = request.args.get('user')
     
     if blog_id:
         blogs = Blog.query.filter_by(id=blog_id).first()
         return render_template('entries.html', blogs=blogs)
+    if user_id:
+        blogs = Blog.query.filter_by(owner_id=user_id).all()
+        user = User.query.filter_by(id=user_id).first()
+        return render_template('singleUser.html', blogs=blogs, user=user)
 
     blogs = Blog.query.all()
+    
     
     return render_template("blog.html", blogs=blogs)
 
