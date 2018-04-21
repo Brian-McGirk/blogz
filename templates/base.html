@@ -2,22 +2,31 @@
 <html>
     <head>
         <title>{{title}}</title>
-        <style>
+        <style>  
         a{
             padding: 5px;
+        }
+        li{
+            display: inline-block;
+        }
+
+        ul{
+    
+            display: inline-block;
         }
         </style>
     </head>
     <body>
         <nav>
-            <ul id="user-account">
-                <li><a href="/login">Log in</a></li>
-                <li><a href="/logout">Log out</a></li>
-            </ul>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/blog">All posts</a></li>
                 <li><a href="/newpost">New post</a></li>
+            </ul>
+            <ul>
+                <li><a href="/login">Log in</a></li>
+                <li><a href="/logout">Log out</a></li>
+                <li><a href="/signup">Sign up</a></li>
             </ul>
         </nav>
         {% block content %}
