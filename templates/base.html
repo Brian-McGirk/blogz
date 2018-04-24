@@ -2,6 +2,9 @@
 <html>
     <head>
         <title>{{title}}</title>
+        {% if session %}
+        <p>Logged in as {{session["username"]}}</p>
+        {% endif %}
         <style>  
         a{
             padding: 5px;

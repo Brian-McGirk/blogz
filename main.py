@@ -119,7 +119,7 @@ def login():
 @app.route("/")
 def index():
     users = User.query.all()
-    return render_template('index.html', users=users)
+    return render_template('index.html', users=users, session=session)
 
 
 @app.route("/blog", methods=['POST', 'GET'])
@@ -133,12 +133,12 @@ def blog():
     if user_id:
         blogs = Blog.query.filter_by(owner_id=user_id).all()
         user = User.query.filter_by(id=user_id).first()
-        return render_template('singleUser.html', blogs=blogs, user=user)
+        return render_template('singleUser.html', blogs=blogs, user=user, session=session)
 
     blogs = Blog.query.all()
     
     
-    return render_template("blog.html", blogs=blogs)
+    return render_template("blog.html", blogs=blogs, session=session)
 
 
 @app.route("/newpost", methods=['POST', 'GET'])
@@ -162,9 +162,9 @@ def new_post():
             db.session.commit()
             return redirect("/blog?id={0}".format(new_blog.id))
         else:
-            return render_template("/new_post.html", title_error=title_error, body_error=body_error, blog_title=blog_title, blog_body=blog_body)
+            return render_template("/new_post.html", title_error=title_error, body_error=body_error, blog_title=blog_title, blog_body=blog_body, session=session)
 
-    return render_template("/new_post.html")
+    return render_template("/new_post.html", session=session)
             
 if __name__ == '__main__':    
     app.run()
